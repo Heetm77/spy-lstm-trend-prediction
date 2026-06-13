@@ -1,15 +1,28 @@
-.venv/
-venv/
+# Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+.venv/
+venv/
+
+# PyCharm
 .idea/
+
+# Jupyter
 .ipynb_checkpoints/
 
+# Data
 data/raw/
 data/processed/
+
+# Models
 models/*.keras
 models/*.h5
 models/*.pkl
 
+# OS files
 .DS_Store
 Thumbs.db
