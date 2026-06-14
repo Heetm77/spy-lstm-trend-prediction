@@ -5,44 +5,50 @@ import yfinance as yf
 
 
 RAW_DATA_DIR = Path("data/raw")
+START_DATE = "2000-01-01"
+
+TICKERS = {
+    "SPY": "spy.csv",
+    "^TNX": "treasury_10y.csv",
+    "^IRX": "treasury_13w.csv",
+    "^FVX": "treasury_5y.csv",
+    "^TYX": "treasury_30y.csv",
+}
 
 
-def download_market_data(tickers, start_date="2000-01-01", end_date=None):
-    data = yf.download(
-        tickers=tickers,
-        start=start_date,
-        end=end_date,
+def download_single_ticker(ticker):
+    df = yf.download(
+        ticker,
+        period="max",
         auto_adjust=False,
         progress=False,
-        group_by="ticker",
     )
 
-    return data
+    if df.empty:
+        raise ValueError(f"No data downloaded for {ticker}")
 
+    if isinstance(df.columns, pd.MultiIndex):
+        df.columns = df.columns.get_level_values(0)
 
-def save_single_ticker(data, ticker, output_path):
-    if isinstance(data.columns, pd.MultiIndex):
-        ticker_data = data[ticker].copy()
-    else:
-        ticker_data = data.copy()
+    df.columns = [col.lower().replace(" ", "_") for col in df.columns]
+    df.index.name = "date"
 
-    ticker_data.columns = [col.lower().replace(" ", "_") for col in ticker_data.columns]
-    ticker_data.index.name = "date"
-    ticker_data.to_csv(output_path)
+    df = df.loc[df.index >= START_DATE]
+
+    return df
 
 
 def main():
     RAW_DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-    tickers = ["SPY", "^TNX", "^IRX", "^FVX", "^TYX"]
+    for ticker, filename in TICKERS.items():
+        print(f"Downloading {ticker}...")
+        df = download_single_ticker(ticker)
 
-    data = download_market_data(tickers)
+        output_path = RAW_DATA_DIR / filename
+        df.to_csv(output_path)
 
-    save_single_ticker(data, "SPY", RAW_DATA_DIR / "spy.csv")
-    save_single_ticker(data, "^TNX", RAW_DATA_DIR / "treasury_10y.csv")
-    save_single_ticker(data, "^IRX", RAW_DATA_DIR / "treasury_13w.csv")
-    save_single_ticker(data, "^FVX", RAW_DATA_DIR / "treasury_5y.csv")
-    save_single_ticker(data, "^TYX", RAW_DATA_DIR / "treasury_30y.csv")
+        print(f"Saved {ticker} to {output_path} with {len(df)} rows")
 
     print("Raw market data saved to data/raw/")
 
