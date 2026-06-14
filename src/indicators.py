@@ -1,12 +1,11 @@
 import pandas as pd
-
+import numpy as np
 
 def add_basic_price_features(df):
     df = df.copy()
 
     df["daily_return"] = df["close"].pct_change()
-    df["log_return"] = (1 + df["daily_return"]).apply(lambda x: pd.NA if x <= 0 else pd.Series([x]).apply("log").iloc[0])
-
+    df["log_return"] = np.log1p(df["daily_return"])
     df["high_low_range"] = (df["high"] - df["low"]) / df["close"]
     df["open_close_range"] = (df["close"] - df["open"]) / df["open"]
 

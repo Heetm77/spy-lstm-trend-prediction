@@ -26,15 +26,22 @@ def create_target(df, threshold=0.002):
 
     return df
 
-
 def clean_dataset(df):
     df = df.copy()
 
     df = df.replace([float("inf"), float("-inf")], pd.NA)
+
+    missing_counts = df.isna().sum()
+    fully_missing_cols = missing_counts[missing_counts == len(df)].index.tolist()
+
+    if fully_missing_cols:
+        print("Dropping fully missing columns:")
+        print(fully_missing_cols)
+        df = df.drop(columns=fully_missing_cols)
+
     df = df.dropna()
 
     return df
-
 
 def build_processed_dataset():
     PROCESSED_DATA_DIR.mkdir(parents=True, exist_ok=True)
