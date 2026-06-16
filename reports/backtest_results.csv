@@ -1,0 +1,2 @@
+strategy_cumulative_return,benchmark_cumulative_return,strategy_sharpe,benchmark_sharpe,strategy_volatility,benchmark_volatility,strategy_max_drawdown,benchmark_max_drawdown,number_of_trading_days,number_of_strategy_days_in_market
+0.21783193710636373,0.8610564168706238,0.5920639047933234,1.095159969844139,0.09635902038225624,0.16322969198129939,-0.13569214623326853,-0.18998904129504945,947,106
